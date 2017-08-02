@@ -120,7 +120,11 @@
                     callback(ko.toJSON({status: 0, mensagem: 'Ocorreu um erro no retorno do serviço.'}));
                 }
             })
-            .fail(function() {
+            .fail(function($err) {
+                if ($err.status == 422) {
+                    globalMsgVm.erros($err.responseJSON.description);
+                    return;
+                }
                 globalMsgVm.erros(['Ocorreu um erro na execução do serviço.']);
             })
             .always(function() {
@@ -166,7 +170,8 @@
         };
     }
 
-    var domainPath = document.location.origin+"/public";
+    var domainPath = document.location.origin+"/";
+    var publicPath = domainPath+"public";
     var viewModelComum = new ViewModelComum();
     var modalViewM = new LoadingModalViewModel();
     var globalMsgVm = new GlobalMsgs();

@@ -17,27 +17,33 @@
         </div>    
     </div>
 
-    <div class="row" style="margin-top: 30px">
+    <div class="row mt30">
         <div class="col-md-12">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th>Nome</th>
-                        <th>Token</th>
-                        <th>Fotos</th>
+                        <th width="10%" style="min-width: 50px"></th>
+                        <th width="40%">Nome</th>
+                        <th width="30">Token</th>
+                        <th width="20">Fotos</th>
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: companies">
                     <tr>
                         <!-- ko if: !editFlag() -->
-                        <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>
+                        <th class="center">
+                            <i class="fa fa-pencil-square-o cursor-pointer" aria-hidden="true" data-bind="click: edit"></i>
+                            <i class="fa fa-trash-o cursor-pointer" aria-hidden="true" data-bind="click: remove"></i>
+                        </th>
                         <th><span data-bind="text: description"></span></th>
                         <td><span data-bind="text: token"></span></td>
                         <td><span data-bind="text: photos"></span></td>
                         <!-- /ko -->
                         <!-- ko if: editFlag --> 
-                        <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>
+                        <th class="center">
+                            <i class="fa fa-times cursor-pointer" aria-hidden="true" data-bind="click: cancel"></i>
+                            <i class="fa fa-check cursor-pointer" aria-hidden="true" data-bind="click: save"></i>
+                        </th>
                         <th><input type="text" class="form-control" data-bind="value: description"></th>
                         <td><span data-bind="text: token"></span></td>
                         <td><span data-bind="text: photos"></span></td>
@@ -67,25 +73,26 @@
             self.token       = ko.observable(com_token);
             self.editFlag    = ko.observable(editFlag);
             self.photos      = ko.observable(photos);
-            self.description = ko.observable(com_description).extend({
-                required: { params: true, message: 'O campo Nome é obrigatório.'}
-            });
+            self.description = ko.observable(com_description);
 
             self.erros = ko.validation.group(self);
 
-            self.delete = function(item) {
+            self.remove = function(item) {
                 confirmModal.show(
                     'Tem certeza que deseja remover a empresa ?',
                     function() {            
 
-                        var data = { id : item.id()};
+                        var data = {
+                            id : item.id,
+                            _token: '{{ csrf_token() }}',
+                        };
                         var deleteCallback = function(response) {
                             if(!response.status) {
-                                globalMsgVm.erros([response.mesage]);
-
+                                globalMsgVm.erros([response.message]);
+                                return;
                             } else { 
                                 viewModel.companies.remove(item);
-                                globalMsgVm.showSuccessMessage(response.mesage);
+                                globalMsgVm.showSuccessMessage(response.message);
                             }
                         };
                         viewModelComum.doPost(url_delete, data, deleteCallback);
@@ -101,8 +108,9 @@
                 }
                 
                 var data = {
-                    id:    self.id(),
-                    description:  self.description()
+                    id:    self.id,
+                    description:  self.description() || "",
+                    _token: '{{ csrf_token() }}',
                 };
 
                 var saveCallback = function(response) {
@@ -111,8 +119,8 @@
                         return;
 
                     } else  {
-                        self.id(response.company.id);
-                        self.token(response.company.token);
+                        self.id = response.data.com_id;
+                        self.token(response.data.com_token);
                         self.editFlag(false);
                         globalMsgVm.showSuccessMessage(response.message);
                     }
@@ -123,12 +131,12 @@
             
             self.original = null;
             self.edit = function() {
-                self.original = {description:description};
+                self.original = {description:self.description()};
                 self.editFlag(true);
             };
             
-            self.cancelar = function() {
-                if (!self.id()) {
+            self.cancel = function() {
+                if (!self.id) {
                     viewModel.companies.remove(self);
                     return;
                 }

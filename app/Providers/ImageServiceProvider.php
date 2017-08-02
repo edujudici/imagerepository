@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class CompanyServiceProvider extends ServiceProvider
+class ImageServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -23,7 +23,6 @@ class CompanyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('App\Http\Api\Company\CompanyInterface', 'App\Http\Api\Company\CompanyServiceImpl');
+        $this->app->bind('App\Http\Api\Image\ImageInterface', 'App\Http\Api\Image\ImageServiceImpl');
     }
 }
-          

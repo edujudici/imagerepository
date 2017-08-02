@@ -26,7 +26,9 @@ Route::group(['middleware' => 'auth'], function ()
     Route::post('/save',  ['as' => 'company.save',  'uses' => 'HomeController@save']);
     Route::post('/delete',  ['as' => 'company.delete',  'uses' => 'HomeController@delete']);
     
-    // Route::get ('/list/{id?}',  ['as' => 'image.list',  'uses' => 'ImageController@list']);
+    Route::get ('/image-list/{id}',  ['as' => 'image.list',  'uses' => 'ImageController@index']);
+    Route::post('/image-save',  ['as' => 'image.save',  'uses' => 'ImageController@save']);
+    Route::post('/image-delete',  ['as' => 'image.delete',  'uses' => 'ImageController@delete']);
 
 });
 

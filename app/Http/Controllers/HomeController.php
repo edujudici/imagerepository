@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Api\Company\CompanyInterface;
+use App\Http\Requests\CompanyFormRequest;
 
 class HomeController extends Controller
 {
@@ -20,11 +21,11 @@ class HomeController extends Controller
         return view('home', compact('model'));
     }
 
-    public function save($data) {
-        return $this->companyI->save($data);
+    public function save(CompanyFormRequest $req) {
+        return $this->companyI->save($req);
     }
 
-    public function delete($id) {
-        return $this->companyI->save($id);
+    public function delete(Request $req) {
+        return $this->companyI->delete($req->id);
     }
 }
