@@ -9,6 +9,9 @@ use App\Image;
 
 class ImageServiceImpl implements ImageInterface {
 
+    const RANDOM_NAME = 40;
+    const IMAGE_SIZE = 900;
+
     protected $image; 
 
     function __construct(Image $image) {
@@ -35,13 +38,24 @@ class ImageServiceImpl implements ImageInterface {
         foreach ($files as $key => $value) {
             
             $imageRealPath = $value->getRealPath();
-            $name = str_random(40).'.'.$value->getClientOriginalExtension(); //$value->getClientOriginalName();
+            $name = str_random(self::RANDOM_NAME).'.'.$value->getClientOriginalExtension();
             
-            //image intervention
             $img = ImageIntervention::make($imageRealPath);
-            //$img->resize(600, 600);
-            
-            $path = 'images/'.$company->com_token.'/'.$name;
+
+            if ($img->width() > $img->height()) {
+
+                $img->resize(self::IMAGE_SIZE, null, function($r) {
+                    $r->aspectRatio();
+                });
+
+            } else {
+
+                $img->resize(null, self::IMAGE_SIZE, function($r) {
+                    $r->aspectRatio();
+                });
+            }
+
+            $path = 'images/'.$company->com_token.DIRECTORY_SEPARATOR.$name;
             $img->save(public_path($path));
             
             $image = new Image;            
