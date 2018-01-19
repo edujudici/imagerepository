@@ -29,6 +29,10 @@ class ImageServiceImpl implements ImageInterface {
         return $this->image->where('com_id', $companyId)->count();        
     }
 
+    public function findById($imageId) {
+        return $this->image->find($imageId);
+    }
+
     public function save($request) {
 
         $companyI = app(CompanyInterface::class);

@@ -30,6 +30,8 @@ Route::group(['middleware' => 'auth'], function ()
     Route::post('/image-save',  ['as' => 'image.save',  'uses' => 'ImageController@save']);
     Route::post('/image-delete',  ['as' => 'image.delete',  'uses' => 'ImageController@delete']);
 
+    Route::get('/image-link/{id}', ['as' => 'image.link', 'uses' => 'ImageController@link']);
+
 });
 
 

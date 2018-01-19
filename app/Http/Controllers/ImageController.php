@@ -27,4 +27,10 @@ class ImageController extends Controller
     public function delete(Request $req) {
         return $this->imageI->delete($req->id);
     }
+
+    public function link($id) {
+        $image = $this->imageI->findById($id);
+        if ($image)
+            return url($image->img_path);
+    }
 }
