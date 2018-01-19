@@ -28,8 +28,8 @@ class ImageController extends Controller
         return $this->imageI->delete($req->id);
     }
 
-    public function link($id) {
-        $image = $this->imageI->findById($id);
+    public function link($id, $token) {
+        $image = $this->imageI->findById($id, $token);
         if ($image)
             return url($image->img_path);
     }

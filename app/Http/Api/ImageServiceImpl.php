@@ -29,8 +29,12 @@ class ImageServiceImpl implements ImageInterface {
         return $this->image->where('com_id', $companyId)->count();        
     }
 
-    public function findById($imageId) {
-        return $this->image->find($imageId);
+    public function findById($imageId, $token) {
+
+        $this->validToken($token);
+
+        $image = $this->image->find($imageId);
+        return $image;
     }
 
     public function save($request) {
@@ -83,5 +87,12 @@ class ImageServiceImpl implements ImageInterface {
         $image->delete();
 
         return response()->api($image);
+    }
+
+    private function validToken($token) {
+        $companyI = app(CompanyInterface::class);
+        $company = $companyI->findByToken($token);
+        if (!$company)
+            abort(403, 'Token inválido');
     }
 }

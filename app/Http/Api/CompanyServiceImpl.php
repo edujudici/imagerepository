@@ -65,4 +65,10 @@ class CompanyServiceImpl implements CompanyInterface {
     public function findById($companyId) {
         return $this->company->find($companyId);
     }
+
+    public function findByToken($token) {
+        return $this->company
+            ->where('com_token', $token)
+            ->first();
+    }
 }
