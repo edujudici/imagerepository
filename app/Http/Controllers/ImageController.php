@@ -29,6 +29,10 @@ class ImageController extends Controller
     }
 
     public function link($id, $token) {
+
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+
         $image = $this->imageI->findById($id, $token);
         if ($image)
             return url($image->img_path);
