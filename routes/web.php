@@ -22,7 +22,6 @@ Route::group(['middleware' => 'auth'], function ()
 	
 	Route::get('/home', 'HomeController@index');
 
-
     Route::post('/save',  ['as' => 'company.save',  'uses' => 'HomeController@save']);
     Route::post('/delete',  ['as' => 'company.delete',  'uses' => 'HomeController@delete']);
     
@@ -30,8 +29,8 @@ Route::group(['middleware' => 'auth'], function ()
     Route::post('/image-save',  ['as' => 'image.save',  'uses' => 'ImageController@save']);
     Route::post('/image-delete',  ['as' => 'image.delete',  'uses' => 'ImageController@delete']);
 
-    Route::get('/image-link/{id}/{token}', ['as' => 'image.link', 'uses' => 'ImageController@link']);
-
 });
+
+Route::get('/image-link/{id}/{token}', ['as' => 'image.link', 'uses' => 'ImageController@link']);
 
 
