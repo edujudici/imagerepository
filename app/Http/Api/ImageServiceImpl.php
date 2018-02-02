@@ -33,46 +33,68 @@ class ImageServiceImpl implements ImageInterface {
 
         $this->validToken($token);
 
-        $image = $this->image->find($imageId);
-        return $image;
+        return $this->image->find($imageId);
+    }
+
+    public function saveExternal($request) {
+
+        $response = $this->validToken($request->token);
+
+        $file = $request->file('file');
+
+        $id = $this->saveImage($file, $response->com_id);
+
+        return response()->api($id);
+    }
+
+    private function saveImage($value, $companyId) {
+
+        $companyI = app(CompanyInterface::class);
+        $company = $companyI->findById($companyId);  
+
+        $imageRealPath = $value->getRealPath();
+        $name = str_random(self::RANDOM_NAME).'.'.$value->getClientOriginalExtension();
+        
+        $img = ImageIntervention::make($imageRealPath);
+
+        if ($img->width() > $img->height()) {
+
+            $img->resize(self::IMAGE_SIZE, null, function($r) {
+                $r->aspectRatio();
+            });
+
+        } else {
+
+            $img->resize(null, self::IMAGE_SIZE, function($r) {
+                $r->aspectRatio();
+            });
+        }
+
+        $path = 'images/'.$company->com_token.DIRECTORY_SEPARATOR.$name;
+        $img->save(public_path($path));
+        
+        $image = new Image;            
+        $image->img_path = $path;
+        $image->com_id = $company->com_id;
+        $image->save();
+
+        return $image->img_id;
+    }
+
+    private function saveImageMultiple($request) {
+
+        $files = $request->file('images');
+        foreach ($files as $key => $value) {
+            $this->saveImage($value, $request->companyId);
+        }
     }
 
     public function save($request) {
 
-        $companyI = app(CompanyInterface::class);
-        $company = $companyI->findById($request->companyId);        
-
-    	$files = $request->file('images');
-        foreach ($files as $key => $value) {
-            
-            $imageRealPath = $value->getRealPath();
-            $name = str_random(self::RANDOM_NAME).'.'.$value->getClientOriginalExtension();
-            
-            $img = ImageIntervention::make($imageRealPath);
-
-            if ($img->width() > $img->height()) {
-
-                $img->resize(self::IMAGE_SIZE, null, function($r) {
-                    $r->aspectRatio();
-                });
-
-            } else {
-
-                $img->resize(null, self::IMAGE_SIZE, function($r) {
-                    $r->aspectRatio();
-                });
-            }
-
-            $path = 'images/'.$company->com_token.DIRECTORY_SEPARATOR.$name;
-            $img->save(public_path($path));
-            
-            $image = new Image;            
-            $image->img_path = $path;
-            $image->com_id = $company->com_id;
-            $image->save();
-        }
+        $this->saveImageMultiple($request);    	
         
-        $images = $this->getAll($image->com_id);
+        $images = $this->getAll($request->companyId);
+
         return response()->api($images);
     }
 
@@ -94,5 +116,7 @@ class ImageServiceImpl implements ImageInterface {
         $company = $companyI->findByToken($token);
         if (!$company)
             abort(403, 'Token inválido');
+
+        return $company;
     }
 }

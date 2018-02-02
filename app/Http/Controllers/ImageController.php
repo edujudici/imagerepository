@@ -24,6 +24,11 @@ class ImageController extends Controller
         return $this->imageI->save($req);
     }
 
+    public function saveExternal(Request $req) {
+
+        return $this->imageI->saveExternal($req);
+    }
+
     public function delete(Request $req) {
         return $this->imageI->delete($req->id);
     }

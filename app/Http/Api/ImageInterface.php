@@ -7,5 +7,6 @@ interface ImageInterface {
     public function getAllCount($companyId);
     public function findById($imageId, $token);
     public function save($request);
+    public function saveExternal($request);
     public function delete($imageId);    
 }

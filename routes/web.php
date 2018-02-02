@@ -15,6 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/image-save-external', ['as' => 'image.saveout', 'uses' => 'ImageController@saveExternal']);
+Route::get('/image-link/{id}/{token}', ['as' => 'image.link', 'uses' => 'ImageController@link']);
+
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function ()
@@ -30,7 +33,3 @@ Route::group(['middleware' => 'auth'], function ()
     Route::post('/image-delete',  ['as' => 'image.delete',  'uses' => 'ImageController@delete']);
 
 });
-
-Route::get('/image-link/{id}/{token}', ['as' => 'image.link', 'uses' => 'ImageController@link']);
-
-
